@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 /// Draws a circular reticle in front of any object that the user gazes at.
 /// The circle dilates if the object is clickable.
@@ -53,11 +54,15 @@ public class GvrReticle : MonoBehaviour, IGvrGazePointer {
   // before distance multiplication.
   private float reticleInnerDiameter = 0.0f;
   private float reticleOuterDiameter = 0.0f;
+	private float gazeStartTime;
+	private GameObject gazedAt;
 
   void Start () {
     CreateReticleVertices();
 
     materialComp = gameObject.GetComponent<Renderer>().material;
+		gazeStartTime = -1.0f;
+		gazedAt = null;
   }
 
   void OnEnable() {
@@ -93,6 +98,10 @@ public class GvrReticle : MonoBehaviour, IGvrGazePointer {
   public void OnGazeStart(Camera camera, GameObject targetObject, Vector3 intersectionPosition,
                           bool isInteractive) {
     SetGazeTarget(intersectionPosition, isInteractive);
+		gazedAt = targetObject;
+		gazeStartTime = Time.time;
+		ExecuteEvents.Execute (gazedAt, null, (TimedInputHandler handler, BaseEventData data) => handler.TimedInputStart ());
+
   }
 
   /// Called every frame the user is still looking at a valid GameObject. This
@@ -104,6 +113,12 @@ public class GvrReticle : MonoBehaviour, IGvrGazePointer {
   public void OnGazeStay(Camera camera, GameObject targetObject, Vector3 intersectionPosition,
                          bool isInteractive) {
     SetGazeTarget(intersectionPosition, isInteractive);
+		if (gazedAt != null && gazeStartTime > 0) {
+			if (Time.time - gazeStartTime > 3.0f && ExecuteEvents.CanHandleEvent<TimedInputHandler> (gazedAt)) {
+				gazeStartTime = -1f;
+				ExecuteEvents.Execute (gazedAt, null, (TimedInputHandler handler, BaseEventData data) => handler.HandleTimedInput ());
+			}
+		}
   }
 
   /// Called when the user's look no longer intersects an object previously
@@ -117,7 +132,7 @@ public class GvrReticle : MonoBehaviour, IGvrGazePointer {
     reticleDistanceInMeters = kReticleDistanceMax;
     reticleInnerAngle = kReticleMinInnerAngle;
     reticleOuterAngle = kReticleMinOuterAngle;
-  }
+	}
 
   /// Called when a trigger event is initiated. This is practically when
   /// the user begins pressing the trigger.

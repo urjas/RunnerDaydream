@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using SocketIO;
+using UnityEngine.SceneManagement;
 
 public class PlayerMotor : MonoBehaviour {
 	private CharacterController controller;
@@ -16,9 +17,11 @@ public class PlayerMotor : MonoBehaviour {
 	//private Actions actions;
 	// Use this for initialization
 	void Start () {
+		//SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 		controller = GetComponent<CharacterController>();
 		go = GameObject.Find("SocketIO");
 		socket= go.GetComponent<SocketIOComponent>();
+
 		socket.On ("datarec",(SocketIOEvent obj) => {
 			pos=float.Parse(obj.data.ToString().Substring(7,7));
 			Debug.Log(pos);

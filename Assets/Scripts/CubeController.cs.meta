@@ -1,10 +1,15 @@
 fileFormatVersion: 2
 guid: 65cb2ddc9f725d04a8cc557ea75e7077
-timeCreated: 1474893717
+timeCreated: 1486362440
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - cube: {fileID: 1000014231432806, guid: a3781b0df4215b74993b78001e622fd1, type: 2}
+  - controllerPivot: {instanceID: 0}
+  - cubeInactiveMaterial: {fileID: 2100000, guid: 0fd1ce7909017594b9de5976c100071d,
+      type: 2}
+  - cubeHoverMaterial: {fileID: 2100000, guid: d8210c46668f4e340a71986f9f9e7ad8, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
